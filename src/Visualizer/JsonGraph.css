@@ -1,0 +1,22 @@
+.json-graph-container {
+  width: 100%;
+  height: 100%;
+  background-color: #f8f9fa;
+}
+
+.graph-error {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 20px;
+  text-align: center;
+}
+
+.graph-error h3 {
+  margin-bottom: 10px;
+}

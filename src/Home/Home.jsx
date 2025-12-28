@@ -1,86 +1,54 @@
-import React, { useState, useEffect, useRef } from 'react';
-import './Home.css'
+import React, { useState, useEffect } from 'react';
+import './Home.css';
 import MonoEditor from '../Editor/MonoEditor';
+import JsonGraph from '../Visualizer/JsonGraph';
 
 const Home = () => {
-  const [isMobile, setIsMobile] = useState(false);
-  const [pane1Size, setPane1Size] = useState(40);
-  const containerRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [jsonCode, setJsonCode] = useState(`{
+  "name": "Harsh Desai",
+  "title": "Software Developer",
+  "location": "Pune, India",
+  "email": "harshdesai.hd123@gmail.com",
+  "phone": "+91 93270 99901",
+  "links": {
+    "linkedin": "linkedin.com/in/harshdesaihd",
+    "github": "github.com/harshdesai695",
+    "portfolio": "harshdesaiportfolio.netlify.app"
+  },
+  "experience": {
+    "company": "Oracle",
+    "role": "Software Developer",
+    "highlights": [
+      "Architected Oracle Banking Routing Hub for HDFC Bank with 0 critical defects",
+      "Migrated 700+ REST/SOAP services from J2EE to Spring Boot using Agentic AI",
+      "Reduced response time by 75% through caching and optimization",
+      "Reduced debug time by 80% using ELK Stack",
+      "Performance rating: Outstanding (5/5)"
+    ]
+  }
+}`);
 
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth <= 768;
-      
-      setIsMobile((prevIsMobile) => {
-        if (prevIsMobile !== mobile) {
-          setPane1Size(mobile ? 50 : 40); 
-          return mobile;
-        }
-        return prevIsMobile;
-      });
+      setIsMobile(window.innerWidth <= 768);
     };
 
-    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleMouseDown = (e) => {
-    e.preventDefault(); 
-    const handleMouseMove = (moveEvent) => {
-      if (!containerRef.current) return;
-
-      const containerRect = containerRef.current.getBoundingClientRect();
-      let newSize;
-      if (isMobile) {
-        const offsetY = moveEvent.clientY - containerRect.top;
-        newSize = (offsetY / containerRect.height) * 100;
-      } else {
-        const offsetX = moveEvent.clientX - containerRect.left;
-        newSize = (offsetX / containerRect.width) * 100;
-      }
-      if (newSize > 10 && newSize < 90) {
-        setPane1Size(newSize);
-      }
-    };
-
-    const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.removeEventListener('touchmove', handleMouseMove);
-      document.removeEventListener('touchend', handleMouseUp);
-    };
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    document.addEventListener('touchmove', handleMouseMove);
-    document.addEventListener('touchend', handleMouseUp);
-  };
-
   return (
-    <div 
-      ref={containerRef} 
-      className={`split-container ${isMobile ? 'mobile' : 'desktop'}`}
-    >
-      <div 
-        className="split-pane pane-1" 
-        style={{ 
-          [isMobile ? 'height' : 'width']: `${pane1Size}%` 
-        }}
-      >
-        <MonoEditor />
+    <div className={`home-container ${isMobile ? 'mobile' : 'desktop'}`}>
+      <div className="pane editor-pane">
+        <MonoEditor 
+          value={jsonCode}
+          onChange={setJsonCode}
+        />
       </div>
 
-      <div 
-        className="gutter" 
-        onMouseDown={handleMouseDown}
-        onTouchStart={handleMouseDown}>
-        <span style={{ fontSize: '12px', color: '#555' }}>
-            {isMobile ? '•••' : '⋮'}
-        </span>
-      </div>
-      
-      <div className="split-pane pane-2">
-        <h2>Pane 2</h2>
+      <div className="pane graph-pane">
+        <JsonGraph data={jsonCode} />
       </div>
     </div>
   );

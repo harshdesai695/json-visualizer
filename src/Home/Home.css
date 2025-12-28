@@ -1,61 +1,43 @@
-
-.split-container {
+.home-container {
   display: flex;
-  height: 100vh;
   width: 100vw;
+  height: 100vh;
   overflow: hidden;
-  user-select: none; 
 }
 
-.split-container.desktop {
+.pane {
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- Desktop Layout (Horizontal) --- */
+.desktop {
   flex-direction: row;
 }
 
-/* Mobile Layout */
-.split-container.mobile {
+.desktop .editor-pane {
+  width: 30%;
+  height: 100%;
+  border-right: 1px solid #ddd;
+}
+
+.desktop .graph-pane {
+  width: 70%;
+  height: 100%;
+}
+
+/* --- Mobile Layout (Vertical) --- */
+.mobile {
   flex-direction: column;
 }
 
-.split-pane {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: sans-serif;
-  overflow: auto;
-}
-
-.pane-1 {
-  background-color: #e0f7fa;
-}
-
-.pane-2 {
-  background-color: #fce4ec;
-  flex: 1;
-}
-
-.gutter {
-  background-color: #ccc;
-  transition: background-color 0.2s;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.gutter:hover, .gutter:active {
-  background-color: #999; /* Darker when hovered/active */
-}
-
-/* Desktop Gutter: Thin vertical line */
-.desktop .gutter {
-  width: 8px;
-  height: 100%;
-  cursor: col-resize; /* Horizontal resize cursor */
-}
-
-/* Mobile Gutter: Thin horizontal line */
-.mobile .gutter {
+.mobile .editor-pane {
   width: 100%;
-  height: 8px;
-  cursor: row-resize; /* Vertical resize cursor */
+  height: 50%;
+  border-bottom: 1px solid #ddd;
+}
+
+.mobile .graph-pane {
+  width: 100%;
+  height: 50%;
 }
