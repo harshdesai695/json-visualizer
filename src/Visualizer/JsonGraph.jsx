@@ -92,6 +92,7 @@ const JsonGraph = ({ data }) => {
     if (data) {
       processGraph(data);
     }
+    // eslint-disable-next-line
   }, [data]);
 
   useEffect(() => {
