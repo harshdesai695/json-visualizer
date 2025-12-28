@@ -8,64 +8,77 @@ const JsonGraph = ({ data }) => {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [error, setError] = useState(null);
   const [rfInstance, setRfInstance] = useState(null);
-  
+
   const processGraph = (jsonString) => {
     try {
       const parsedData = JSON.parse(jsonString);
       const newNodes = [];
       const newEdges = [];
-      let nodeId = 0;
-      const xSpacing = 250;
-      const ySpacing = 80;
+      
+      const xSpacing = 350;
+      const ySpacing = 50;
+      let nodeIdCounter = 0;
+      let leafIndex = 0;
 
-      const createNode = (key, value, x, y, parentId = null) => {
-        const currentId = `node-${nodeId++}`;
+      const traverseAndCalculatePositions = (key, value, depth) => {
         const isObject = value !== null && typeof value === 'object';
-        const label = isObject 
+        const hasChildren = isObject && Object.keys(value).length > 0;
+        
+        const currentId = `node-${nodeIdCounter++}`;
+        const labelText = isObject 
           ? (Array.isArray(value) ? `${key} []` : `${key} {}`) 
           : `${key}: ${String(value)}`;
 
-        newNodes.push({
+        const nodeData = {
           id: currentId,
-          data: { label },
-          position: { x, y },
+          key,
+          label: labelText,
+          isObject,
+          x: depth * xSpacing,
+          y: 0,
+          childrenIds: []
+        };
+
+        if (hasChildren) {
+          let firstChildY = null;
+          let lastChildY = null;
+
+          Object.entries(value).forEach(([childKey, childValue]) => {
+            const childNode = traverseAndCalculatePositions(childKey, childValue, depth + 1);
+            nodeData.childrenIds.push(childNode.id);
+            
+            if (firstChildY === null) firstChildY = childNode.y;
+            lastChildY = childNode.y;
+            
+            newEdges.push({
+              id: `edge-${currentId}-${childNode.id}`,
+              source: currentId,
+              target: childNode.id,
+              type: 'smoothstep',
+              animated: true,
+              style: { stroke: '#888', strokeWidth: 1.5 }
+            });
+          });
+
+          nodeData.y = (firstChildY + lastChildY) / 2;
+        } else {
+          nodeData.y = leafIndex * ySpacing;
+          leafIndex++;
+        }
+
+        newNodes.push({
+          id: nodeData.id,
+          data: { label: nodeData.label },
+          position: { x: nodeData.x, y: nodeData.y },
           type: 'default',
-          style: { 
-            background: isObject ? '#f0f0f0' : '#fff',
-            border: '1px solid #777',
-            borderRadius: '5px',
-            padding: '10px',
-            fontSize: '12px',
-            minWidth: '150px'
-          }
+          className: nodeData.isObject ? 'is-object' : '',
+          title: nodeData.label 
         });
 
-        if (parentId) {
-          newEdges.push({
-            id: `edge-${parentId}-${currentId}`,
-            source: parentId,
-            target: currentId,
-            animated: true,
-            style: { stroke: '#555' }
-          });
-        }
-
-        if (isObject) {
-          let childIndex = 0;
-          Object.entries(value).forEach(([childKey, childValue]) => {
-            createNode(
-              childKey, 
-              childValue, 
-              x + xSpacing, 
-              y + (childIndex * ySpacing) - (Object.keys(value).length * ySpacing / 2), 
-              currentId
-            );
-            childIndex++;
-          });
-        }
+        return nodeData;
       };
 
-      createNode('Root', parsedData, 50, 50);
+      traverseAndCalculatePositions('Root', parsedData, 0);
       
       setNodes(newNodes);
       setEdges(newEdges);
@@ -79,14 +92,14 @@ const JsonGraph = ({ data }) => {
     if (data) {
       processGraph(data);
     }
-    // eslint-disable-next-line
   }, [data]);
 
   useEffect(() => {
     if (rfInstance && !error) {
-      window.requestAnimationFrame(() => {
-        rfInstance.fitView({ padding: 0.2, duration: 800 });
-      });
+      const timer = setTimeout(() => {
+        rfInstance.fitView({ padding: 0.1, duration: 800 });
+      }, 50);
+      return () => clearTimeout(timer);
     }
   }, [data, rfInstance, error]);
 
@@ -109,7 +122,7 @@ const JsonGraph = ({ data }) => {
         onInit={setRfInstance}
         fitView
       >
-        <Background />
+        <Background color="#e0e0e0" gap={16} />
         <Controls />
       </ReactFlow>
     </div>
