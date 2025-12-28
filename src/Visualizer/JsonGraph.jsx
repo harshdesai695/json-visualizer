@@ -1,117 +1,106 @@
-import React, { useEffect, useState } from 'react';
-import { ReactFlow, Controls, Background, useNodesState, useEdgesState } from '@xyflow/react';
+import React, { useEffect, useCallback } from 'react';
+import { ReactFlow, Controls, Background, useNodesState, useEdgesState, Position } from '@xyflow/react';
+import dagre from 'dagre';
 import '@xyflow/react/dist/style.css';
 import './JsonGraph.css';
+
+const nodeWidth = 220;
+const nodeHeight = 60;
+
+const getLayoutedElements = (nodes, edges) => {
+  const dagreGraph = new dagre.graphlib.Graph();
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
+  dagreGraph.setGraph({ rankdir: 'LR' });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  const layoutedNodes = nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    return {
+      ...node,
+      targetPosition: Position.Left,
+      sourcePosition: Position.Right,
+      position: {
+        x: nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2,
+      },
+    };
+  });
+
+  return { nodes: layoutedNodes, edges };
+};
 
 const JsonGraph = ({ data }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [error, setError] = useState(null);
-  const [rfInstance, setRfInstance] = useState(null);
 
-  const processGraph = (jsonString) => {
+  const processGraph = useCallback((jsonString) => {
     try {
       const parsedData = JSON.parse(jsonString);
-      const newNodes = [];
-      const newEdges = [];
-      
-      const xSpacing = 350;
-      const ySpacing = 50;
+      const tempNodes = [];
+      const tempEdges = [];
       let nodeIdCounter = 0;
-      let leafIndex = 0;
 
-      const traverseAndCalculatePositions = (key, value, depth) => {
-        const isObject = value !== null && typeof value === 'object';
-        const hasChildren = isObject && Object.keys(value).length > 0;
-        
+      const traverse = (key, value, parentId = null) => {
         const currentId = `node-${nodeIdCounter++}`;
-        const labelText = isObject 
+        const isObject = value !== null && typeof value === 'object';
+        const label = isObject 
           ? (Array.isArray(value) ? `${key} []` : `${key} {}`) 
           : `${key}: ${String(value)}`;
 
-        const nodeData = {
+        tempNodes.push({
           id: currentId,
-          key,
-          label: labelText,
-          isObject,
-          x: depth * xSpacing,
-          y: 0,
-          childrenIds: []
-        };
-
-        if (hasChildren) {
-          let firstChildY = null;
-          let lastChildY = null;
-
-          Object.entries(value).forEach(([childKey, childValue]) => {
-            const childNode = traverseAndCalculatePositions(childKey, childValue, depth + 1);
-            nodeData.childrenIds.push(childNode.id);
-            
-            if (firstChildY === null) firstChildY = childNode.y;
-            lastChildY = childNode.y;
-            
-            newEdges.push({
-              id: `edge-${currentId}-${childNode.id}`,
-              source: currentId,
-              target: childNode.id,
-              type: 'smoothstep',
-              animated: true,
-              style: { stroke: '#888', strokeWidth: 1.5 }
-            });
-          });
-
-          nodeData.y = (firstChildY + lastChildY) / 2;
-        } else {
-          nodeData.y = leafIndex * ySpacing;
-          leafIndex++;
-        }
-
-        newNodes.push({
-          id: nodeData.id,
-          data: { label: nodeData.label },
-          position: { x: nodeData.x, y: nodeData.y },
+          data: { label },
+          position: { x: 0, y: 0 },
           type: 'default',
-          className: nodeData.isObject ? 'is-object' : '',
-          title: nodeData.label 
+          className: isObject ? 'node-object' : 'node-primitive'
         });
 
-        return nodeData;
+        if (parentId) {
+          tempEdges.push({
+            id: `edge-${parentId}-${currentId}`,
+            source: parentId,
+            target: currentId,
+            type: 'smoothstep',
+            animated: true,
+            style: { stroke: '#a1a1aa', strokeWidth: 1.5 },
+          });
+        }
+
+        if (isObject) {
+          Object.entries(value).forEach(([childKey, childValue]) => {
+            traverse(childKey, childValue, currentId);
+          });
+        }
       };
 
-      traverseAndCalculatePositions('Root', parsedData, 0);
-      
-      setNodes(newNodes);
-      setEdges(newEdges);
-      setError(null);
+      traverse('Root', parsedData);
+
+      const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+        tempNodes,
+        tempEdges
+      );
+
+      setNodes(layoutedNodes);
+      setEdges(layoutedEdges);
     } catch (err) {
-      setError(err.message);
+      console.error(err);
     }
-  };
+  }, [setNodes, setEdges]);
 
   useEffect(() => {
     if (data) {
       processGraph(data);
     }
-    // eslint-disable-next-line
-  }, [data]);
-
-  useEffect(() => {
-    if (rfInstance && !error) {
-      const timer = setTimeout(() => {
-        rfInstance.fitView({ padding: 0.1, duration: 800 });
-      }, 50);
-      return () => clearTimeout(timer);
-    }
-  }, [data, rfInstance, error]);
-
-  if (error) {
-    return (
-      <div className="graph-error">
-        <h3>Invalid JSON</h3>
-        <p>{error}</p>
-      </div>
-    );
-  }
+  }, [data, processGraph]);
 
   return (
     <div className="json-graph-container">
@@ -120,10 +109,11 @@ const JsonGraph = ({ data }) => {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onInit={setRfInstance}
         fitView
+        minZoom={0.1}
+        maxZoom={4}
       >
-        <Background color="#e0e0e0" gap={16} />
+        <Background color="#1e1e1e" gap={20} />
         <Controls />
       </ReactFlow>
     </div>
