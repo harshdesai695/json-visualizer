@@ -2,10 +2,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 0 2rem;
+  height: 60px; /* Fixed height for calculations */
   background-color: #1e1e1e;
   color: #ffffff;
   border-bottom: 1px solid #333;
+  box-sizing: border-box;
 }
 
 .nav-brand {

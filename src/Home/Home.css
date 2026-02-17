@@ -1,43 +1,49 @@
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* Prevent body-level scrolling */
+}
+
+.main-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Viewport height */
+  width: 100vw;
+  overflow: hidden;
+}
+
 .home-container {
   display: flex;
-  width: 100vw;
-  height: 100vh;
+  flex: 1; /* Occupies remaining space after Navbar */
   overflow: hidden;
+  height: calc(100vh - 60px); /* Subtract Navbar height */
 }
 
 .pane {
-  position: relative;
-  overflow: hidden;
-}
-
-/* --- Desktop Layout (Horizontal) --- */
-.desktop {
-  flex-direction: row;
-}
-
-.desktop .editor-pane {
-  width: 30%;
   height: 100%;
-  border-right: 1px solid #ddd;
+  overflow: auto;
 }
 
-.desktop .graph-pane {
-  width: 70%;
-  height: 100%;
+.editor-pane {
+  flex: 1;
+  border-right: 1px solid #333;
 }
 
-/* --- Mobile Layout (Vertical) --- */
-.mobile {
+.graph-pane {
+  flex: 1;
+  background-color: #1e1e1e;
+}
+
+/* Mobile Adjustments */
+.home-container.mobile {
   flex-direction: column;
+  overflow-y: auto; /* Allow scroll on mobile for stacked layout */
 }
 
-.mobile .editor-pane {
-  width: 100%;
-  height: 50%;
-  border-bottom: 1px solid #ddd;
-}
-
-.mobile .graph-pane {
-  width: 100%;
-  height: 50%;
+.home-container.mobile .pane {
+  height: 50vh; /* Split screen height on mobile */
+  flex: none;
+  border-right: none;
+  border-bottom: 1px solid #333;
 }
