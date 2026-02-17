@@ -1,5 +1,7 @@
+// src/Home/Home.jsx
 import React, { useState, useEffect } from 'react';
 import './Home.css';
+import Navbar from '../components/Navbar/Navbar';
 import MonoEditor from '../Editor/MonoEditor';
 import JsonGraph from '../Visualizer/JsonGraph';
 
@@ -39,16 +41,19 @@ const Home = () => {
   }, []);
 
   return (
-    <div className={`home-container ${isMobile ? 'mobile' : 'desktop'}`}>
-      <div className="pane editor-pane">
-        <MonoEditor 
-          value={jsonCode}
-          onChange={setJsonCode}
-        />
-      </div>
+    <div className="main-wrapper">
+      <Navbar />
+      <div className={`home-container ${isMobile ? 'mobile' : 'desktop'}`}>
+        <div className="pane editor-pane" id="editor">
+          <MonoEditor 
+            value={jsonCode}
+            onChange={setJsonCode}
+          />
+        </div>
 
-      <div className="pane graph-pane">
-        <JsonGraph data={jsonCode} />
+        <div className="pane graph-pane" id="visualizer">
+          <JsonGraph data={jsonCode} />
+        </div>
       </div>
     </div>
   );
