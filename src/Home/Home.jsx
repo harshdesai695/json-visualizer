@@ -29,12 +29,19 @@ const Home = () => {
     ]
   }
 }`);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
+    try {
+      JSON.parse(jsonCode);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+    }
+  }, [jsonCode]);
 
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -48,10 +55,20 @@ const Home = () => {
             value={jsonCode}
             onChange={setJsonCode}
           />
+          {error && (
+            <div className="error-overlay">
+              <span className="error-icon">⚠️</span>
+              <span className="error-text">Invalid JSON: {error}</span>
+            </div>
+          )}
         </div>
 
         <div className="pane graph-pane" id="visualizer">
-          <JsonGraph data={jsonCode} />
+          {!error ? <JsonGraph data={jsonCode} /> : (
+            <div className="visualizer-placeholder">
+              Fix JSON errors to update the graph
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -9,6 +9,14 @@ const MonoEditor = ({ value, onChange }) => {
 
   function handleEditorDidMount(editor, monaco) {
     editorRef.current = editor;
+
+    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+      validate: true,
+      allowComments: false,
+      schemas: [],
+      enableSchemaRequest: true,
+    });
+
     setTimeout(() => {
       editor.layout();
       editor.getAction('editor.action.formatDocument').run();
