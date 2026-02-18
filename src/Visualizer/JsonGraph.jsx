@@ -23,7 +23,7 @@ const nodeHeight = 80;
 const getLayoutedElements = (nodes, edges) => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
-  dagreGraph.setGraph({ rankdir: 'LR' });
+  dagreGraph.setGraph({ rankdir: 'LR', nodesep: 50, ranksep: 100 });
 
   nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
@@ -90,11 +90,14 @@ const GraphCanvas = ({ data, isFilterVisible }) => {
       const traverse = (key, value, parentId = null, currentPath = '') => {
         const id = `node-${nodeIdCounter++}`;
         const isObject = value !== null && typeof value === 'object';
-        const fullPath = currentPath ? `${currentPath}.${key}` : key;
+        const fullPath = currentPath ? (Array.isArray(value) ? `${currentPath}[${key}]` : `${currentPath}.${key}`) : key;
         
-        const label = isObject 
-          ? (Array.isArray(value) ? `${key} []` : `${key} {}`) 
-          : `${key}: ${String(value)}`;
+        let label = key;
+        if (!isObject) {
+          label = `${key}: ${value === null ? 'null' : String(value)}`;
+        } else {
+          label = Array.isArray(value) ? `${key} [${value.length}]` : `${key} {${Object.keys(value).length}}`;
+        }
 
         tempNodes.push({
           id,
@@ -130,9 +133,9 @@ const GraphCanvas = ({ data, isFilterVisible }) => {
       
       setTimeout(() => {
         fitView({ duration: 400, padding: 0.2 });
-      }, 50);
+      }, 100);
     } catch (err) {
-      console.error(err);
+      console.error("Graph Processing Error:", err);
     }
   }, [setNodes, setEdges, fitView]);
 
@@ -143,7 +146,7 @@ const GraphCanvas = ({ data, isFilterVisible }) => {
   useEffect(() => {
     setTimeout(() => {
       fitView({ duration: 400, padding: 0.2 });
-    }, 100);
+    }, 150);
   }, [isFilterVisible, fitView]);
 
   const onNodeMouseEnter = (_, node) => setHoveredPath(node.data.path);
@@ -159,7 +162,7 @@ const GraphCanvas = ({ data, isFilterVisible }) => {
         onNodeMouseEnter={onNodeMouseEnter}
         onNodeMouseLeave={onNodeMouseLeave}
         fitView
-        minZoom={0.1}
+        minZoom={0.05}
         maxZoom={4}
       >
         <Background color="#1e1e1e" gap={20} />
