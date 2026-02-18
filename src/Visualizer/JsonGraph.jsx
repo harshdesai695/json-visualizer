@@ -17,8 +17,8 @@ import dagre from 'dagre';
 import '@xyflow/react/dist/style.css';
 import './JsonGraph.css';
 
-const nodeWidth = 220;
-const nodeHeight = 60;
+const nodeWidth = 240;
+const nodeHeight = 80;
 
 const getLayoutedElements = (nodes, edges) => {
   const dagreGraph = new dagre.graphlib.Graph();

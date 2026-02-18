@@ -8,14 +8,17 @@
   font-family: 'Consolas', 'Monaco', monospace;
   font-size: 13px;
   border-radius: 8px;
-  padding: 10px 15px;
+  padding: 12px 15px;
   text-align: left;
   border: 1px solid #444;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
-  width: 220px;
+  width: 240px;
   transition: all 0.2s ease;
   background-color: #2d2d2d;
   color: #e0e0e0;
+  overflow: hidden;
+  word-wrap: break-word;
+  word-break: break-all;
 }
 
 .react-flow__node:hover {
@@ -38,6 +41,9 @@
   border-radius: 8px !important;
   border: 1px solid #3f3f46 !important;
   border-left: 4px solid #10b981 !important;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .react-flow__edge-path {
@@ -110,14 +116,8 @@
 }
 
 @keyframes slideIn {
-  from { 
-    opacity: 0; 
-    transform: translateX(-20px); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateX(0); 
-  }
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .download-btn {
@@ -139,8 +139,4 @@
   transform: translateY(-1px);
   box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
   border-color: rgba(74, 222, 128, 0.5);
-}
-
-.download-btn:active {
-  transform: translateY(0);
 }
