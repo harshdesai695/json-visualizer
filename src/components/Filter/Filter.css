@@ -1,0 +1,53 @@
+.filter-container {
+  display: flex;
+  gap: 12px;
+  padding: 10px 20px;
+  background: #252526;
+  border-bottom: 1px solid #333;
+  align-items: center;
+}
+
+.filter-input-wrapper {
+  display: flex;
+  flex: 1;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 6px;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.filter-prefix {
+  color: #4ade80;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  margin-right: 10px;
+}
+
+.filter-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #f4f4f5;
+  padding: 10px 0;
+  font-family: 'Consolas', monospace;
+  font-size: 13px;
+  outline: none;
+}
+
+.apply-btn {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.apply-btn:hover {
+  background: #059669;
+}

@@ -2,28 +2,60 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2rem;
-  height: 60px; /* Fixed height for calculations */
+  padding: 0 1.5rem;
+  height: 60px;
   background-color: #1e1e1e;
-  color: #ffffff;
   border-bottom: 1px solid #333;
-  box-sizing: border-box;
+  color: white;
 }
 
-.nav-brand {
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: #007acc;
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.2rem;
 }
 
-.nav-links a {
-  margin-left: 1.5rem;
+.brand-icon {
+  font-size: 1.5rem;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.filter-toggle-btn {
+  background: transparent;
+  color: #4ade80;
+  border: 1px solid #4ade80;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.filter-toggle-btn:hover {
+  background: rgba(74, 222, 128, 0.1);
+}
+
+.filter-toggle-btn.active {
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.github-link {
+  color: #a1a1aa;
   text-decoration: none;
-  color: #cccccc;
   font-size: 0.9rem;
   transition: color 0.2s;
 }
 
-.nav-links a:hover {
-  color: #ffffff;
+.github-link:hover {
+  color: white;
 }

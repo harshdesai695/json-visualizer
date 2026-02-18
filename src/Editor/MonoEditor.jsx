@@ -1,11 +1,11 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import "./MonoEditor.css";
 
 const MonoEditor = ({ value, onChange }) => {
   const editorRef = useRef(null);
   const containerRef = useRef(null);
-  const [theme, setTheme] = useState("vs-dark");
+  // const [theme, setTheme] = useState("vs-dark");
 
   function handleEditorDidMount(editor, monaco) {
     editorRef.current = editor;
@@ -23,9 +23,9 @@ const MonoEditor = ({ value, onChange }) => {
     }, 100);
   }
 
-  const toggleTheme = () => {
-    setTheme(prev => prev === "vs-dark" ? "light" : "vs-dark");
-  };
+  // const toggleTheme = () => {
+  //   setTheme(prev => prev === "vs-dark" ? "light" : "vs-dark");
+  // };
 
   useEffect(() => {
     const container = containerRef.current;
@@ -57,19 +57,19 @@ const MonoEditor = ({ value, onChange }) => {
       ref={containerRef} 
       className="mono-editor-container"
     >
-      <button
+      {/* <button
         onClick={toggleTheme}
         className={`theme-toggle-btn ${theme === 'vs-dark' ? 'btn-light' : 'btn-dark'}`}
       >
         {theme === 'vs-dark' ? '☀ Light' : '☾ Dark'}
-      </button>
+      </button> */}
 
       <Editor
         height="100%"
         defaultLanguage="json"
         value={value}
         onChange={onChange}
-        theme={theme}
+        theme="vs-dark"
         onMount={handleEditorDidMount}
         options={{
           wordWrap: "on",

@@ -51,11 +51,11 @@ const getLayoutedElements = (nodes, edges) => {
   return { nodes: layoutedNodes, edges };
 };
 
-const GraphCanvas = ({ data }) => {
+const GraphCanvas = ({ data, isFilterVisible }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [hoveredPath, setHoveredPath] = useState('');
-  const { getNodes } = useReactFlow();
+  const { getNodes, fitView } = useReactFlow();
 
   const downloadImage = () => {
     const nodes = getNodes();
@@ -127,14 +127,24 @@ const GraphCanvas = ({ data }) => {
       const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(tempNodes, tempEdges);
       setNodes(layoutedNodes);
       setEdges(layoutedEdges);
+      
+      setTimeout(() => {
+        fitView({ duration: 400, padding: 0.2 });
+      }, 50);
     } catch (err) {
       console.error(err);
     }
-  }, [setNodes, setEdges]);
+  }, [setNodes, setEdges, fitView]);
 
   useEffect(() => {
     if (data) processGraph(data);
   }, [data, processGraph]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      fitView({ duration: 400, padding: 0.2 });
+    }, 100);
+  }, [isFilterVisible, fitView]);
 
   const onNodeMouseEnter = (_, node) => setHoveredPath(node.data.path);
   const onNodeMouseLeave = () => setHoveredPath('');
@@ -171,9 +181,9 @@ const GraphCanvas = ({ data }) => {
   );
 };
 
-const JsonGraph = ({ data }) => (
+const JsonGraph = ({ data, isFilterVisible }) => (
   <ReactFlowProvider>
-    <GraphCanvas data={data} />
+    <GraphCanvas data={data} isFilterVisible={isFilterVisible} />
   </ReactFlowProvider>
 );
 
