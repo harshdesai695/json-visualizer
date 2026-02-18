@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { 
   ReactFlow, 
   Controls, 
@@ -54,12 +54,12 @@ const getLayoutedElements = (nodes, edges) => {
 const GraphCanvas = ({ data }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [hoveredPath, setHoveredPath] = useState('');
   const { getNodes } = useReactFlow();
 
   const downloadImage = () => {
     const nodes = getNodes();
     if (nodes.length === 0) return;
-
     const nodesBounds = getNodesBounds(nodes);
     const viewport = getViewportForBounds(nodesBounds, nodesBounds.width, nodesBounds.height, 0.5, 2, 0.1);
 
@@ -87,16 +87,18 @@ const GraphCanvas = ({ data }) => {
       const tempEdges = [];
       let nodeIdCounter = 0;
 
-      const traverse = (key, value, parentId = null) => {
-        const currentId = `node-${nodeIdCounter++}`;
+      const traverse = (key, value, parentId = null, currentPath = '') => {
+        const id = `node-${nodeIdCounter++}`;
         const isObject = value !== null && typeof value === 'object';
+        const fullPath = currentPath ? `${currentPath}.${key}` : key;
+        
         const label = isObject 
           ? (Array.isArray(value) ? `${key} []` : `${key} {}`) 
           : `${key}: ${String(value)}`;
 
         tempNodes.push({
-          id: currentId,
-          data: { label },
+          id,
+          data: { label, path: fullPath },
           position: { x: 0, y: 0 },
           type: 'default',
           className: isObject ? 'node-object' : 'node-primitive'
@@ -104,9 +106,9 @@ const GraphCanvas = ({ data }) => {
 
         if (parentId) {
           tempEdges.push({
-            id: `edge-${parentId}-${currentId}`,
+            id: `edge-${parentId}-${id}`,
             source: parentId,
-            target: currentId,
+            target: id,
             type: 'smoothstep',
             animated: true,
             style: { stroke: '#4ade80', strokeWidth: 2 },
@@ -115,18 +117,14 @@ const GraphCanvas = ({ data }) => {
 
         if (isObject) {
           Object.entries(value).forEach(([childKey, childValue]) => {
-            traverse(childKey, childValue, currentId);
+            traverse(childKey, childValue, id, fullPath);
           });
         }
       };
 
-      traverse('Root', parsedData);
+      traverse('root', parsedData);
 
-      const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-        tempNodes,
-        tempEdges
-      );
-
+      const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(tempNodes, tempEdges);
       setNodes(layoutedNodes);
       setEdges(layoutedEdges);
     } catch (err) {
@@ -135,10 +133,11 @@ const GraphCanvas = ({ data }) => {
   }, [setNodes, setEdges]);
 
   useEffect(() => {
-    if (data) {
-      processGraph(data);
-    }
+    if (data) processGraph(data);
   }, [data, processGraph]);
+
+  const onNodeMouseEnter = (_, node) => setHoveredPath(node.data.path);
+  const onNodeMouseLeave = () => setHoveredPath('');
 
   return (
     <div className="json-graph-container">
@@ -147,12 +146,21 @@ const GraphCanvas = ({ data }) => {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onNodeMouseEnter={onNodeMouseEnter}
+        onNodeMouseLeave={onNodeMouseLeave}
         fitView
         minZoom={0.1}
         maxZoom={4}
       >
         <Background color="#1e1e1e" gap={20} />
         <Controls />
+        <Panel position="top-left" className="path-panel">
+          {hoveredPath && (
+            <div className="path-display">
+              <span className="path-label">Path:</span> {hoveredPath}
+            </div>
+          )}
+        </Panel>
         <Panel position="top-right">
           <button className="download-btn" onClick={downloadImage}>
             Download PNG
