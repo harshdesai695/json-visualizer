@@ -1,5 +1,18 @@
 import React, { useEffect, useCallback } from 'react';
-import { ReactFlow, Controls, Background, useNodesState, useEdgesState, Position } from '@xyflow/react';
+import { 
+  ReactFlow, 
+  Controls, 
+  Background, 
+  useNodesState, 
+  useEdgesState, 
+  Position, 
+  useReactFlow, 
+  ReactFlowProvider, 
+  Panel,
+  getNodesBounds,
+  getViewportForBounds
+} from '@xyflow/react';
+import { toPng } from 'html-to-image';
 import dagre from 'dagre';
 import '@xyflow/react/dist/style.css';
 import './JsonGraph.css';
@@ -38,9 +51,34 @@ const getLayoutedElements = (nodes, edges) => {
   return { nodes: layoutedNodes, edges };
 };
 
-const JsonGraph = ({ data }) => {
+const GraphCanvas = ({ data }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const { getNodes } = useReactFlow();
+
+  const downloadImage = () => {
+    const nodes = getNodes();
+    if (nodes.length === 0) return;
+
+    const nodesBounds = getNodesBounds(nodes);
+    const viewport = getViewportForBounds(nodesBounds, nodesBounds.width, nodesBounds.height, 0.5, 2, 0.1);
+
+    toPng(document.querySelector('.react-flow__viewport'), {
+      backgroundColor: '#1e1e1e',
+      width: nodesBounds.width,
+      height: nodesBounds.height,
+      style: {
+        width: nodesBounds.width,
+        height: nodesBounds.height,
+        transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
+      },
+    }).then((dataUrl) => {
+      const link = document.createElement('a');
+      link.download = 'json-structure.png';
+      link.href = dataUrl;
+      link.click();
+    });
+  };
 
   const processGraph = useCallback((jsonString) => {
     try {
@@ -71,7 +109,7 @@ const JsonGraph = ({ data }) => {
             target: currentId,
             type: 'smoothstep',
             animated: true,
-            style: { stroke: '#a1a1aa', strokeWidth: 1.5 },
+            style: { stroke: '#4ade80', strokeWidth: 2 },
           });
         }
 
@@ -115,9 +153,20 @@ const JsonGraph = ({ data }) => {
       >
         <Background color="#1e1e1e" gap={20} />
         <Controls />
+        <Panel position="top-right">
+          <button className="download-btn" onClick={downloadImage}>
+            Download PNG
+          </button>
+        </Panel>
       </ReactFlow>
     </div>
   );
 };
+
+const JsonGraph = ({ data }) => (
+  <ReactFlowProvider>
+    <GraphCanvas data={data} />
+  </ReactFlowProvider>
+);
 
 export default JsonGraph;
