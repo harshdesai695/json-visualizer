@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import './Home.css';
 import Navbar from '../components/Navbar/Navbar';
 import Filter from '../components/Filter/Filter';
-import MonoEditor from '../Editor/MonoEditor';
-import JsonGraph from '../Visualizer/JsonGraph';
+
+const MonoEditor = lazy(() => import('../Editor/MonoEditor'));
+const JsonGraph = lazy(() => import('../Visualizer/JsonGraph'));
 
 const Home = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -98,12 +99,15 @@ const Home = () => {
           onApply={handleApplyFilter} 
         />
       )}
+      <h1 className="seo-heading">JSON Visualizer — View, Format & Visualize JSON as Graph Online</h1>
       <div className={`home-container ${isMobile ? 'mobile' : 'desktop'}`}>
         <div className="pane editor-pane" id="editor">
-          <MonoEditor 
-            value={jsonCode}
-            onChange={setJsonCode}
-          />
+          <Suspense fallback={<div className="loading-pane">Loading editor...</div>}>
+            <MonoEditor 
+              value={jsonCode}
+              onChange={setJsonCode}
+            />
+          </Suspense>
           {error && (
             <div className="error-overlay">
               <span className="error-icon">⚠️</span>
@@ -113,11 +117,13 @@ const Home = () => {
         </div>
 
         <div className="pane graph-pane" id="visualizer">
-          {!error ? <JsonGraph data={displayCode} isFilterVisible={showFilter} /> : (
-            <div className="visualizer-placeholder">
-              Fix JSON errors to update the graph
-            </div>
-          )}
+          <Suspense fallback={<div className="loading-pane">Loading visualizer...</div>}>
+            {!error ? <JsonGraph data={displayCode} isFilterVisible={showFilter} /> : (
+              <div className="visualizer-placeholder">
+                Fix JSON errors to update the graph
+              </div>
+            )}
+          </Suspense>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "JSON Visualizer",
+  "name": "JSON Visualizer — View & Visualize JSON Online",
   "icons": [
     {
       "src": "favicon.ico",

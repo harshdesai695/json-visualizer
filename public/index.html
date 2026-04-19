@@ -5,29 +5,91 @@
     <link rel="icon" href="%PUBLIC_URL%/logo.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
+
+    <!-- SEO: Primary Meta Tags -->
+    <title>JSON Visualizer — View, Format & Visualize JSON as Graph Online</title>
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="Free online JSON Visualizer tool. Paste your JSON and instantly visualize it as an interactive graph, tree, or formatted view. Filter, search, and export."
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo.jpg" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+    <meta name="keywords" content="json visualizer, json viewer, json formatter, json to graph, json tree view, json online tool, json editor, json validator" />
+    <meta name="author" content="Harsh Desai" />
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>Visualizer-Json</title>
+    <!-- SEO: Canonical URL -->
+    <link rel="canonical" href="https://visualizerjson.netlify.app/" />
+
+    <!-- SEO: Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://visualizerjson.netlify.app/" />
+    <meta property="og:title" content="JSON Visualizer — View, Format & Visualize JSON as Graph Online" />
+    <meta property="og:description" content="Free online JSON Visualizer tool. Paste your JSON and instantly visualize it as an interactive graph." />
+    <meta property="og:image" content="https://visualizerjson.netlify.app/og-image.png" />
+
+    <!-- SEO: Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://visualizerjson.netlify.app/" />
+    <meta name="twitter:title" content="JSON Visualizer — View & Visualize JSON as Graph" />
+    <meta name="twitter:description" content="Free online JSON Visualizer. Paste JSON, view as interactive graph, filter keys, export images." />
+    <meta name="twitter:image" content="https://visualizerjson.netlify.app/og-image.png" />
+
+    <!-- SEO: Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "JSON Visualizer",
+      "url": "https://visualizerjson.netlify.app/",
+      "description": "Free online tool to visualize JSON data as interactive graphs and tree views.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Harsh Desai"
+      }
+    }
+    </script>
+
+    <!-- SEO: FAQ Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is a JSON Visualizer?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A JSON Visualizer is an online tool that converts raw JSON data into interactive visual formats like graphs, trees, or formatted views for easier understanding and debugging."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I visualize JSON online?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Paste your JSON data into the editor on the left, and the tool will automatically generate an interactive graph visualization on the right. You can filter specific keys and export the graph as an image."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo.jpg" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>
+      <h1>JSON Visualizer — Free Online JSON Viewer & Graph Tool</h1>
+      <p>JSON Visualizer lets you paste JSON data and instantly see it as a formatted tree or interactive graph.
+      Supports filtering, searching, and exporting. Built for developers who need to debug and explore JSON data quickly.</p>
+      <p>Enable JavaScript to use this application.</p>
+    </noscript>
     <div id="root"></div>
     <!--
       This HTML file is a template.

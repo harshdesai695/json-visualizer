@@ -13,6 +13,27 @@ html, body, #root {
   overflow: hidden;
 }
 
+.seo-heading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.loading-pane {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  color: #71717a;
+  font-size: 14px;
+}
+
 .home-container {
   display: flex;
   flex: 1;
